@@ -1,0 +1,37 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'io.github.jy41319.bandtrail'
+    compileSdk 35
+    buildFeatures { buildConfig true }
+    defaultConfig {
+        applicationId 'io.github.jy41319.bandtrail'
+        minSdk 29
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0-alpha'
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+    signingConfigs {
+        release {
+            if (System.getenv('BANDTRAIL_KEYSTORE')) {
+                storeFile file(System.getenv('BANDTRAIL_KEYSTORE'))
+                storePassword System.getenv('BANDTRAIL_STORE_PASSWORD')
+                keyAlias 'bandtrail'
+                keyPassword System.getenv('BANDTRAIL_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (System.getenv('BANDTRAIL_KEYSTORE')) signingConfig signingConfigs.release
+        }
+        debug { applicationIdSuffix '.debug' }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    lint { abortOnError true }
+}
+dependencies { testImplementation 'junit:junit:4.13.2' }
