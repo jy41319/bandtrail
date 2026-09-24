@@ -101,7 +101,7 @@ public final class MainActivity extends Activity {
                 if (which==3) { copy("WGS84: " + lat + ", " + lon); return; }
                 String uri;
                 if (which==0) uri="androidamap://viewMap?sourceApplication=BandTrail&poiname=" + Uri.encode("手环最后检测位置") + "&lat="+lat+"&lon="+lon+"&dev=1";
-                else if (which==1) uri="baidumap://map/marker?location="+lat+","+lon+"&title="+Uri.encode("手环最后检测位置")+"&coord_type=wgs84&src="+getPackageName();
+                else if (which==1) uri="baidumap://map/marker?location="+lat+","+lon+"&title="+Uri.encode("手环最后检测位置")+"&coord_type=wgs84&src=andr.jy41319.bandtrail";
                 else uri="geo:"+lat+","+lon+"?q="+lat+","+lon+"("+Uri.encode("手环最后检测位置")+")";
                 try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(uri))); }
                 catch (ActivityNotFoundException e) { Ui.toast(this,"未安装对应地图，可以选择复制坐标"); }

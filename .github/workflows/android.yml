@@ -23,6 +23,7 @@ jobs:
           name: bandtrail-debug-and-reports
           path: |
             app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
             app/build/outputs/apk/androidTest/debug/*.apk
             app/build/reports/
   device-tests:
@@ -44,9 +45,15 @@ jobs:
           api-level: 35
           arch: x86_64
           profile: pixel_2
-          script: ./gradlew connectedDebugAndroidTest
+          script: |
+            ./gradlew connectedDebugAndroidTest
+            mkdir -p screenshots
+            adb exec-out run-as io.github.jy41319.bandtrail.debug cat files/home.png > screenshots/home.png
+            adb exec-out run-as io.github.jy41319.bandtrail.debug cat files/settings.png > screenshots/settings.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: device-test-reports
-          path: app/build/reports/androidTests/
+          path: |
+            app/build/reports/androidTests/
+            screenshots/
