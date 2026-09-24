@@ -15,7 +15,11 @@ final class Store {
     String address() { return p.getString("address", ""); }
     String name() { return p.getString("name", "我的手环"); }
     void select(String name, String address) {
-        p.edit().clear().putString("name", name).putString("address", address).apply();
+        if (address.equalsIgnoreCase(address())) {
+            p.edit().putString("name", name).putString("address", address).apply();
+        } else {
+            p.edit().clear().putString("name", name).putString("address", address).apply();
+        }
     }
     void status(GuardEngine.State state, String detail) {
         p.edit().putString("state", state.name()).putString("detail", detail)

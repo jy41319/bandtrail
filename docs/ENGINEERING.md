@@ -41,3 +41,11 @@
 - Android instrumentation：本地记录语义、诊断脱敏、日志上限。
 - UI：模拟器启动、权限拒绝、无设备空状态及设置流程。
 - 真机：广播共存、息屏稳定性、地图点位和耗电；模拟器结果不能替代。
+
+## 0.1.1 设备选择修正（2026-09-25）
+
+通过 `BluetoothAdapter.getBondedDevices()` 和 `BluetoothManager.getConnectedDevices(GATT)` 读取系统设备记录，排除明确仅支持经典蓝牙的设备。Android 11+ 优先读取 `BluetoothDevice.getAlias()`，Android 10 使用缓存名称；广播名称作为后备。读取记录只要求附近设备权限，精确定位仅在扫描/守护时请求。
+
+来源：[已配对设备](https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#getBondedDevices())、[别名](https://developer.android.com/reference/android/bluetooth/BluetoothDevice#getAlias())、[当前 GATT 连接](https://developer.android.com/reference/android/bluetooth/BluetoothManager#getConnectedDevices(int))。
+
+系统记录与扫描按地址去重，已连接和已配对记录优先，未知广播折叠并设数量上限。系统记录不写入 last-seen，不冒充广播观测。手动地址支持冒号、连字符和紧凑格式并校验；重选相同地址保留已有位置。没有读取配置私有文件、root、反射蓝牙隐藏接口或第三方 App 数据库。测试中的反射仅用于注入界面测试样本，不进入正式包。

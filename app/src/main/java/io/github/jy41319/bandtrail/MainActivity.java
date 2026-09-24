@@ -31,7 +31,7 @@ public final class MainActivity extends Activity {
         guard = Ui.button(this,root,"开启守护",true,this::toggleGuard);
         Button changeDevice = Ui.button(this,root,"更换设备",false,() -> {
             if (GuardService.running) { Ui.toast(this,"请先暂停守护，再更换设备"); return; }
-            if (ensurePermissions()) startActivity(new Intent(this,ScanActivity.class));
+            startActivity(new Intent(this,ScanActivity.class));
         });
         changeDevice.setVisibility(store.address().isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
         LinearLayout location = Ui.card(this,root,Color.WHITE);
@@ -48,7 +48,7 @@ public final class MainActivity extends Activity {
         Ui.button(this,tools,"提醒与后台设置",false,this::settings);
         Ui.button(this,tools,"兼容性诊断",false,this::diagnostics);
         permissions = Ui.text(this,tools,"",13,Ui.MUTED,false);
-        Ui.note(this,root,"实验版 0.1 · 手环 11 尚待真机验证\n仅按所选蓝牙地址识别。广播暂停或地址变化会影响守护；请先完成诊断，再将它用于日常辅助。");
+        Ui.note(this,root,"实验版 0.1.1 · 手环 11 尚待真机验证\n仅按所选蓝牙地址识别。广播暂停或地址变化会影响守护；请先完成诊断，再将它用于日常辅助。");
         Ui.button(this,root,"使用说明与隐私",false,this::help);
         render();
     }
@@ -61,7 +61,7 @@ public final class MainActivity extends Activity {
     }
     private void toggleGuard() {
         if (GuardService.running) { startService(new Intent(this,GuardService.class).setAction(GuardService.STOP)); return; }
-        if (store.address().isEmpty()) { if (ensurePermissions()) startActivity(new Intent(this,ScanActivity.class)); return; }
+        if (store.address().isEmpty()) { startActivity(new Intent(this,ScanActivity.class)); return; }
         if (!ensurePermissions()) return;
         try { startForegroundService(new Intent(this,GuardService.class)); }
         catch (RuntimeException e) { store.status(GuardEngine.State.INTERRUPTED,"系统未允许启动，请检查权限后重试"); render(); }
@@ -148,7 +148,7 @@ public final class MainActivity extends Activity {
     }
     private void help() {
         new AlertDialog.Builder(this).setTitle("先验证，再放心使用")
-            .setMessage("1. 保持小米运动健康正常连接，在环迹里扫描并确认自己的手环。\n2. 开启守护，确认页面出现检测时间和位置。\n3. 锁屏走开再返回，检查诊断记录和提醒。\n\n环迹只被动读取广播，不接管官方 App 的连接。若手环不广播或地址变化，本版可能无法识别，请重新选择设备；无法保证所有型号兼容。\n\n本应用没有联网权限、广告和统计 SDK。数据只保存在应用私有目录，不参与系统备份。仅在你主动打开外部地图或复制信息时，数据才交给相应应用。\n\n监测必须提前开启；手机重启、强制停止或系统限制会造成空档。省电休眠可能延迟提醒，不能作为可靠的防丢保证。")
+            .setMessage("1. 保持小米运动健康正常连接，先从“手机已有的设备”选择手环；列表没有时再扫描或输入蓝牙地址。\n2. 开启守护，确认页面出现检测时间和位置。\n3. 锁屏走开再返回，检查诊断记录和提醒。\n\n环迹只被动读取广播，不接管官方 App 的连接。若手环不广播或地址变化，本版可能无法识别，请重新选择设备；无法保证所有型号兼容。\n\n本应用没有联网权限、广告和统计 SDK。数据只保存在应用私有目录，不参与系统备份。仅在你主动打开外部地图或复制信息时，数据才交给相应应用。\n\n监测必须提前开启；手机重启、强制停止或系统限制会造成空档。省电休眠可能延迟提醒，不能作为可靠的防丢保证。")
             .setPositiveButton("知道了",null).show();
     }
     @Override public void onRequestPermissionsResult(int code,String[] perms,int[] results) {

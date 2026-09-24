@@ -27,6 +27,13 @@ public class StoreTest {
         String export=store.diagnostic();
         assertFalse(export.contains("secret device")); assertFalse(export.contains("AA:BB")); assertFalse(export.contains("31.123456"));
     }
+    @Test public void selectingSameDevicePreservesLastLocationAndPreferences() {
+        store.select("旧名称", "AA:BB:CC:DD:EE:FF");
+        store.p.edit().putLong("seen",12345).putString("lat","31.2").putString("lon","121.4").putInt("timeout",120).commit();
+        store.select("系统保存名称", "AA:BB:CC:DD:EE:FF");
+        assertEquals("系统保存名称", store.name()); assertEquals(12345,store.p.getLong("seen",0));
+        assertTrue(store.hasPoint()); assertEquals(120,store.p.getInt("timeout",0));
+    }
     @Test public void testDiagnosticsAreBounded() {
         for(int i=0;i<150;i++) store.event("事件 "+i);
         assertEquals(100,store.events().split("\n").length);

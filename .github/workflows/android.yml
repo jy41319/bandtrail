@@ -55,10 +55,11 @@ jobs:
             ./gradlew connectedDebugAndroidTest
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-            adb shell am instrument -w -e class io.github.jy41319.bandtrail.UiTest io.github.jy41319.bandtrail.debug.test/androidx.test.runner.AndroidJUnitRunner
+            adb shell am instrument -w -e class io.github.jy41319.bandtrail.UiTest,io.github.jy41319.bandtrail.PickerTest io.github.jy41319.bandtrail.debug.test/androidx.test.runner.AndroidJUnitRunner
             mkdir -p screenshots
             adb exec-out run-as io.github.jy41319.bandtrail.debug cat files/home.png > screenshots/home.png
             adb exec-out run-as io.github.jy41319.bandtrail.debug cat files/settings.png > screenshots/settings.png
+            adb exec-out run-as io.github.jy41319.bandtrail.debug cat files/picker-system-fixture.png > screenshots/picker-system-fixture.png
             python3 -c "from pathlib import Path; assert all(p.read_bytes().startswith(bytes.fromhex('89504e470d0a1a0a')) for p in Path('screenshots').glob('*.png'))"
       - uses: actions/upload-artifact@v4
         if: always()
