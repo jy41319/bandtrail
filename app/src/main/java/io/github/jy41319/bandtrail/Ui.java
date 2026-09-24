@@ -44,7 +44,9 @@ final class Ui {
     static Button button(Activity a, LinearLayout parent, String label, boolean primary, Runnable action) {
         Button b = new Button(a); b.setText(label); b.setAllCaps(false); b.setTextSize(16); b.setMinHeight(dp(a,52));
         b.setTextColor(primary ? Color.WHITE : GREEN);
-        b.setBackgroundTintList(ColorStateList.valueOf(primary ? GREEN : PALE));
+        b.setBackground(new android.graphics.drawable.RippleDrawable(ColorStateList.valueOf(0x223A7255),
+            shape(primary ? GREEN : PALE, dp(a,16)), null));
+        b.setStateListAnimator(null); b.setElevation(0);
         b.setOnClickListener(v -> action.run());
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1,-2); p.bottomMargin=dp(a,8); parent.addView(b,p); return b;
     }

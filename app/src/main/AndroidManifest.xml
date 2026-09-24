@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <application android:label="环迹 BandTrail" android:theme="@style/AppTheme"
-        android:icon="@drawable/ic_app" android:allowBackup="false" android:supportsRtl="true">
+        android:icon="@drawable/ic_app" android:allowBackup="false" android:fullBackupContent="false" android:dataExtractionRules="@xml/data_extraction_rules" android:supportsRtl="true">
         <activity android:name=".ScanActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>

@@ -29,10 +29,11 @@ public final class MainActivity extends Activity {
         detail = Ui.text(this,hero,"",14,Color.rgb(222,237,221),false);
         lastSeen = Ui.text(this,hero,"",14,Color.WHITE,false);
         guard = Ui.button(this,root,"开启守护",true,this::toggleGuard);
-        Ui.button(this,root,store.address().isEmpty() ? "添加我的手环" : "更换设备",false,() -> {
+        Button changeDevice = Ui.button(this,root,"更换设备",false,() -> {
             if (GuardService.running) { Ui.toast(this,"请先暂停守护，再更换设备"); return; }
             if (ensurePermissions()) startActivity(new Intent(this,ScanActivity.class));
         });
+        changeDevice.setVisibility(store.address().isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
         LinearLayout location = Ui.card(this,root,Color.WHITE);
         Ui.text(this,location,"最后记录的位置",19,Ui.INK,true);
         point = Ui.text(this,location,"",15,Ui.INK,false);
@@ -60,7 +61,7 @@ public final class MainActivity extends Activity {
     }
     private void toggleGuard() {
         if (GuardService.running) { startService(new Intent(this,GuardService.class).setAction(GuardService.STOP)); return; }
-        if (store.address().isEmpty()) { Ui.toast(this,"先点击“添加我的手环”，选择你自己的设备"); return; }
+        if (store.address().isEmpty()) { if (ensurePermissions()) startActivity(new Intent(this,ScanActivity.class)); return; }
         if (!ensurePermissions()) return;
         try { startForegroundService(new Intent(this,GuardService.class)); }
         catch (RuntimeException e) { store.status(GuardEngine.State.INTERRUPTED,"系统未允许启动，请检查权限后重试"); render(); }
@@ -83,13 +84,14 @@ public final class MainActivity extends Activity {
         state.setText(title);
         detail.setText(interrupted ? "系统可能停止了服务。最后记录仍在，请重新开启守护。" : store.p.getString("detail","先添加手环，再开启守护。"));
         lastSeen.setText("最后检测  " + Store.time(store.p.getLong("seen",0)));
-        guard.setText(GuardService.running ? "暂停守护" : "开启守护");
+        guard.setText(store.address().isEmpty() ? "添加我的手环" : GuardService.running ? "暂停守护" : "开启守护");
         if (store.hasPoint()) {
             point.setText(String.format(Locale.getDefault(),"%s, %s\n手机定位精度约 ±%.0f 米\n对应检测：%s\n定位采样：%s%s",store.p.getString("lat",""),store.p.getString("lon",""),
                 store.p.getFloat("accuracy",0), Store.time(store.p.getLong("pointSeen",0)),Store.time(store.p.getLong("fixTime",0)),
                 store.p.getLong("pointSeen",0) < store.p.getLong("seen",0) ? "\n较新的检测没有有效定位，保留了此前位置。" : ""));
         } else point.setText("还没有位置记录\n开启守护后，需同时收到手环广播和有效手机定位。室内可能暂时无法定位。");
         map.setEnabled(store.hasPoint());
+        map.setAlpha(store.hasPoint() ? 1f : 0.45f);
         boolean notifications = getSystemService(NotificationManager.class).areNotificationsEnabled();
         permissions.setText((Permissions.ready(this) ? "蓝牙与定位权限已授予" : "需要授予蓝牙与精确位置权限")
             + (notifications ? "" : "\n通知未开启，失联提醒可能无法显示"));

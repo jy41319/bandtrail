@@ -14,6 +14,15 @@
 
 > **0.1.0-alpha：实验版。** 软件构建与逻辑测试不等于硬件兼容性验证。小米手环 11、与小米运动健康共存、跨品牌息屏稳定性和耗电均须真机测试。只对仍在广播、地址保持稳定的设备有效。
 
+## 界面
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="280" alt="环迹首页，无设备时的真实空状态" />
+  <img src="docs/screenshots/settings.png" width="280" alt="守护设置，包括失联等待与静音" />
+</p>
+
+Android 15 模拟器实拍；未使用伪造的手环位置。
+
 ## 它能做什么？
 
 - **最后位置**：保存手机最后检测到目标 BLE 广播时的手机位置，分别展示观测时间、定位时间与精度。
@@ -47,6 +56,8 @@
 | 随机地址轮换 | 不支持跨地址身份解析，需要重新选择设备 |
 | 手环震动、健康数据同步 | 不提供 |
 
+已完成的构建、模拟器测试和签名检查见 [验证报告](docs/TEST_REPORT.md)。
+
 ## 本地构建
 
 安装 JDK 17、Android SDK Platform 35、Build Tools 35.0.0，将 SDK 路径写入 `local.properties`（不提交 Git）：
@@ -61,7 +72,7 @@ sdk.dir=/your/path/to/Android/sdk
 ./gradlew assembleRelease           # 默认生成未签名 Release
 ```
 
-调试包使用 `.debug` 包名，可与正式包共存。发布签名通过 `BANDTRAIL_KEYSTORE`、`BANDTRAIL_STORE_PASSWORD`、`BANDTRAIL_KEY_PASSWORD` 环境变量传入，别名为 `bandtrail`。**不要提交签名密钥或密码。**
+调试包使用 `.debug` 包名，可与正式包共存。发布签名通过 `BANDTRAIL_KEYSTORE`、`BANDTRAIL_STORE_PASSWORD`、`BANDTRAIL_KEY_PASSWORD` 环境变量传入，别名为 `bandtrail`。**不要提交签名密钥或密码。** 本机私有签名目录已配置时，也可运行 `python3 scripts/build-release.py`；脚本不会打印签名密码。
 
 ## 实现与参考
 

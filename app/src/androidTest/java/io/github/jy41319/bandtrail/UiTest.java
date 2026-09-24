@@ -28,7 +28,7 @@ public class UiTest {
         try(FileOutputStream out=i.getTargetContext().openFileOutput(file,0)) { image.compress(Bitmap.CompressFormat.PNG,100,out); }
         image.recycle();
     }
-    @Test public void emptyStateAndSettingsAreUsableWithoutPermissions() throws Exception {
+    @Test public void emptyStateAndSettingsAreUsable() throws Exception {
         Instrumentation instrumentation=InstrumentationRegistry.getInstrumentation();
         new Store(instrumentation.getTargetContext()).p.edit().clear().commit();
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)) {

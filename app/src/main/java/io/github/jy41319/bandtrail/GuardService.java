@@ -24,6 +24,9 @@ public final class GuardService extends Service {
     private boolean registered, scanning, ending;
     private long started, lastTick, lastWrite, lastDiagnostic, maxGap, lastObserved = -1;
     private int samples;
+    private long snapshotTime, snapshotElapsed;
+    private int snapshotRssi;
+    private Location snapshotFix;
     private final LocationListener locationListener = new LocationListener() {
         @Override public void onLocationChanged(Location location) {
             if (fix == null || location.getElapsedRealtimeNanos() > fix.getElapsedRealtimeNanos()) fix = location;
@@ -49,8 +52,12 @@ public final class GuardService extends Service {
             if (lastObserved >= 0) maxGap = Math.max(maxGap, observed - lastObserved);
             lastObserved = observed;
             samples++;
+            snapshotTime = System.currentTimeMillis() - (now - observed);
+            snapshotElapsed = observed;
+            snapshotRssi = result.getRssi();
+            snapshotFix = fix == null ? null : new Location(fix);
             if (now - lastWrite >= 2000 || lastWrite == 0) {
-                store.seen(System.currentTimeMillis() - (now - observed), observed, result.getRssi(), fix);
+                flushObservation();
                 lastWrite = now;
             }
             if (!"NEARBY".equals(store.p.getString("state", ""))) {
@@ -72,6 +79,7 @@ public final class GuardService extends Service {
             lastTick = now;
             store.heartbeat();
             if (engine.tick(now)) {
+                flushObservation();
                 store.status(engine.state(), "持续未检测到目标；广播暂停或距离变远均可能造成此状态");
                 store.event("持续未检测到目标，已保存最后记录");
                 updateNotification("暂未检测到手环 · 点此查看最后位置");
@@ -152,6 +160,9 @@ public final class GuardService extends Service {
         return builder.build();
     }
     private void updateNotification(String text) { getSystemService(NotificationManager.class).notify(1, notification("环迹正在守护", text, "guard")); }
+    private void flushObservation() {
+        if (snapshotTime > 0) store.seen(snapshotTime, snapshotElapsed, snapshotRssi, snapshotFix);
+    }
     private void fail(String reason) {
         ending = true;
         if (engine != null) engine.interrupt();
@@ -162,6 +173,7 @@ public final class GuardService extends Service {
     }
     @Override public void onDestroy() {
         running = false;
+        flushObservation();
         handler.removeCallbacksAndMessages(null);
         try { if (scanner != null && scanning) scanner.stopScan(callback); } catch (RuntimeException ignored) {}
         try { if (locations != null) locations.removeUpdates(locationListener); } catch (RuntimeException ignored) {}
