@@ -4,13 +4,19 @@
 
 **留住最后的线索。**
 
-轻量、离线、开源的 Android 手环最后位置助手。
+轻量、离线、开源的 Android 手环 / 手表最后位置助手。
 
 [下载 APK](https://github.com/jy41319/bandtrail/releases) · [安装与验证](docs/GETTING_STARTED.md) · [设计与开源参考](docs/ENGINEERING.md) · [隐私说明](PRIVACY.md)
 
 [![Android](https://github.com/jy41319/bandtrail/actions/workflows/android.yml/badge.svg)](https://github.com/jy41319/bandtrail/actions/workflows/android.yml)
 
 </div>
+
+**你有没有想过，如果你的智能手环 / 手表丢了，该怎么办？**
+
+如果设备没有定位查找功能，连最后在哪里见过它都想不起来，寻找就无从下手。
+
+现在，环迹可以帮你留住这条线索：在设备兼容、提前开启守护并成功获取位置的情况下，记录**手机最后检测到手环 / 手表时的手机位置**。发现设备不见了，就能回到最后记录的位置附近寻找，更快缩小搜索范围，为找回心爱的设备多一份机会。
 
 > **0.1.1-alpha：实验版。** 软件构建与逻辑测试不等于硬件兼容性验证。小米手环 11、与小米运动健康共存、跨品牌息屏稳定性和耗电均须真机测试。只对仍在广播、地址保持稳定的设备有效。
 
